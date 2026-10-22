@@ -59,6 +59,7 @@ Matching on `originalFileName` means the rule still fires if an attacker renames
 
 ![Before and after](screenshots/01-before-after.png)
 ![Rule 100100 details](screenshots/02-rule-100100-details.png)
+![Rule 100100 code](screenshots/03-rule-code.png)
 
 **Techniques Wazuh already detected**
 
