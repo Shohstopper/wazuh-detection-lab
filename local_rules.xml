@@ -1,0 +1,63 @@
+<!-- Local rules -->
+
+<!-- Modify it at your will. -->
+<!-- Copyright (C) 2015, Wazuh Inc. -->
+
+<!-- Example -->
+<group name="local,syslog,sshd,">
+
+  <!--
+  Dec 10 01:02:02 host sshd[1234]: Failed none for root from 1.1.1.1 port 1066 ssh2
+  -->
+  <rule id="100001" level="5">
+    <if_sid>5716</if_sid>
+    <srcip>1.1.1.1</srcip>
+    <description>sshd: authentication failed from IP 1.1.1.1.</description>
+    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>
+  </rule>
+
+</group>
+
+<group name="local,windows,sysmon,persistence,">
+  <rule id="100100" level="10">
+    <if_sid>61603,92032</if_sid>
+    <field name="win.eventdata.originalFileName" type="pcre2">(?i)^schtasks\.exe$</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)\s/create\b</field>
+    <description>Scheduled task created with schtasks.exe on $(win.system.computer): possible persistence</description>
+    <mitre>
+      <id>T1053.005</id>
+    </mitre>
+  </rule>
+</group>
+
+<group name="local,windows,sysmon,">
+  <rule id="100101" level="10">
+    <if_sid>61603,92032</if_sid>
+    <field name="win.eventdata.originalFileName" type="pcre2">(?i)^certutil\.exe$</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)\s[-/](urlcache|verifyctl)\b</field>
+    <description>certutil used to download a file on $(win.system.computer): possible tool transfer</description>
+    <mitre>
+      <id>T1105</id>
+    </mitre>
+  </rule>
+
+  <rule id="100102" level="10">
+    <if_sid>61603,92032</if_sid>
+    <field name="win.eventdata.originalFileName" type="pcre2">(?i)^regsvr32\.exe$</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(scrobj\.dll|\s/i:)</field>
+    <description>regsvr32 loading a scriptlet on $(win.system.computer): possible defense evasion</description>
+    <mitre>
+      <id>T1218.010</id>
+    </mitre>
+  </rule>
+
+  <rule id="100103" level="8">
+    <if_sid>61603,92032</if_sid>
+    <field name="win.eventdata.originalFileName" type="pcre2">(?i)^attrib\.exe$</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)\s\+[hs]\b</field>
+    <description>attrib used to hide a file on $(win.system.computer): possible hidden artifact</description>
+    <mitre>
+      <id>T1564.001</id>
+    </mitre>
+  </rule>
+</group>
